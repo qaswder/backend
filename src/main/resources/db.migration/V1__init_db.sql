@@ -6,7 +6,7 @@ CREATE SEQUENCE seq_author
 
 CREATE TABLE lib_author
 (
-    id         int8 NOT NULL DEFAULT nextval('seq_author'),
+    id         int NOT NULL DEFAULT nextval('seq_author'),
     surname    VARCHAR(255),
     name       VARCHAR(255),
     patronymic VARCHAR(255),
@@ -25,7 +25,7 @@ CREATE SEQUENCE seq_book
 
 CREATE TABLE lib_book
 (
-    id         int8 NOT NULL DEFAULT nextval('seq_book'),
+    id         int NOT NULL DEFAULT nextval('seq_book'),
     title      VARCHAR(255),
     genre      VARCHAR(255),
     publisher  VARCHAR(255),
@@ -36,7 +36,7 @@ CREATE TABLE lib_book
 
 CREATE TABLE lib_author_book
 (
-    id_author int8 NOT NULL,
-    id_book   int8 NOT NULL,
+    id_author int NOT NULL,
+    id_book   int NOT NULL,
     PRIMARY KEY (id_author, id_book)
 );
