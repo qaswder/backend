@@ -39,7 +39,7 @@ public class Author {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinTable(name = "lib_author_book",
             joinColumns = {@JoinColumn(name = "id_author")},
             inverseJoinColumns = {@JoinColumn(name = "id_book")})
