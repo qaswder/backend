@@ -3,6 +3,7 @@ package com.example.backendlib.core.author;
 import com.example.backendlib.core.author.dto.Author;
 import com.example.backendlib.core.author.dto.AuthorRepo;
 import com.example.backendlib.error.ConflictResourceException;
+import com.example.backendlib.error.NotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +32,11 @@ public class AuthorService {
         return authorRepo.findById(id);
     }
 
+    @Transactional(readOnly = true)
+    public Page<Author> getAuthorByName(@NonNull String name,Pageable pageable){
+        return authorRepo.findAuthorByName(name, pageable);
+    }
+
     @Transactional
     public Author saveAuthor(@NonNull Author author){
         try{
@@ -47,6 +53,10 @@ public class AuthorService {
 
     @Transactional
     public void deleteAuthorById(@NonNull Integer id){
-        authorRepo.deleteById(id);
+        Author author = getAuthorById(id)
+                .orElseThrow(()->new NotFoundException("Автор с id="+ id +", не найден"));
+
+        author.removeBooks(author.getBooks());
+        authorRepo.delete(author);
     }
 }
