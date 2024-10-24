@@ -23,7 +23,7 @@ public class Book {
     private String title;
 
     @Column(name = "genre")
-    private String genre;
+    private GenreEnum genre;
 
     @Column(name = "publisher")
     private String publisher;
@@ -47,7 +47,7 @@ public class Book {
         return title;
     }
 
-    public String getGenre() {
+    public GenreEnum getGenre() {
         return genre;
     }
 
@@ -65,6 +65,30 @@ public class Book {
 
     public Set<Author> getAuthors() {
         return authors;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setGenre(GenreEnum genre) {
+        this.genre = genre;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public void setAuthors(Set<Author> authors) {
