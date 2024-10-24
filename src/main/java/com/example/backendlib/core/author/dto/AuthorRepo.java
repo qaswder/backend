@@ -21,6 +21,10 @@ public interface AuthorRepo extends JpaRepository<Author, Integer> {
     Optional<Author> findById(@Param("id") Integer id);
 
     @EntityGraph(type = EntityGraph.EntityGraphType.FETCH, attributePaths = "books")
+    @Query("select a from Author a where a.surname = :surname and a.name = :name and a.patronymic = :patronymic")
+    Optional<Author> findByFullName(@Param("surname") String surname, @Param("name") String name, @Param("patronymic") String patronymic);
+
+    @EntityGraph(type = EntityGraph.EntityGraphType.FETCH, attributePaths = "books")
     @Query("select a from Author a where a.surname like %:searchTerm% or a.name like %:searchTerm% or a.patronymic like %:searchTerm%")
     Page<Author> findAuthorByName(@Param("searchTerm") String searchTerm, Pageable pageable);
 }

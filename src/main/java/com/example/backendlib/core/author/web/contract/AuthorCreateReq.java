@@ -1,11 +1,16 @@
 package com.example.backendlib.core.author.web.contract;
 
-import jakarta.validation.constraints.NotNull;
-
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+@Schema(description = "Создание автора")
 public record AuthorCreateReq(
-        @NotNull String surname,
-        @NotNull String name,
-        @NotNull String patronymic,
-        @NotNull String country
+        @NotBlank
+        String surname,
+        @NotBlank
+        String name,
+        @NotBlank
+        String patronymic,
+        @NotBlank
+        String country
 ) {
 }
