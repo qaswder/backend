@@ -11,6 +11,7 @@ public enum GenreEnum {
     SCIENCE_FICTION("Научная фантастика"),
     MYSTERY("Мистика"),
     ROMANCE("Романы"),
+    COMEDY("Комедия"),
     THRILLER("Триллер"),
     HORROR("Ужасы"),
     DRAMA("Драма");
