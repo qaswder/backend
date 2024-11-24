@@ -2,6 +2,7 @@ package com.example.backendlib.core.book.handler;
 
 import com.example.backendlib.core.author.AuthorService;
 import com.example.backendlib.core.author.dto.Author;
+import com.example.backendlib.core.author.web.contract.AuthorCreateReq;
 import com.example.backendlib.core.book.BookService;
 import com.example.backendlib.core.book.converter.BookConverter;
 import com.example.backendlib.core.book.dto.Book;
@@ -15,7 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -74,28 +74,26 @@ public class BookHandler {
                 .orElseThrow(() -> new NotFoundException("Книга с id=" + id + ", не найден"));
 
         Set<Author> authors = req.authors().stream()
-                .map(authorCreateReq -> {
-                    Author author = new Author();
-                    author.setSurname(authorCreateReq.surname());
-                    author.setName(authorCreateReq.name());
-                    author.setPatronymic(authorCreateReq.patronymic());
-                    author.setCountry(authorCreateReq.country());
-                    return author;
-                }).collect(Collectors.toSet());
+                .map(this::createAuthor)
+                .collect(Collectors.toSet());
 
-        try{
-            if(book.getAuthors().isEmpty()){
+            if (book.getAuthors().isEmpty()) {
                 book.addAuthors(authorService.findOrCreateAuthors(authors));
             } else {
                 throw new IllegalStateException("В книге уже записаны авторы");
             }
-        } catch (IllegalStateException e){
-            throw new ConflictResourceException(e.getMessage());
-        }
-
         return bookConverter.toViewWithAuthors(
                 bookService.saveBook(book)
         );
+    }
+
+    private Author createAuthor(AuthorCreateReq authorCreateReq) {
+        Author author = new Author();
+        author.setSurname(authorCreateReq.surname());
+        author.setName(authorCreateReq.name());
+        author.setPatronymic(authorCreateReq.patronymic());
+        author.setCountry(authorCreateReq.country());
+        return author;
     }
 
     public BookView handlerUpdateBookById(@NonNull Integer id, @NonNull BookUpdateReq req) {

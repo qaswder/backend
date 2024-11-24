@@ -34,7 +34,7 @@ public class BookController {
     @GetMapping
     @Operation(summary = "Получение всех книг")
     public Page<BookView> getAllBooks(@RequestParam(name = "size", required = false, defaultValue = "10") Integer size,
-                                          @RequestParam(name = "page", required = false, defaultValue = "0") Integer page) {
+                                      @RequestParam(name = "page", required = false, defaultValue = "0") Integer page) {
         Pageable pageable = PageRequest.of(page, size);
         return bookHandler.handlerGetAllBooks(pageable);
     }
@@ -43,8 +43,8 @@ public class BookController {
     @GetMapping("/search")
     @Operation(summary = "Получение книги по названию")
     public Page<BookView> getBookByTitle(@RequestParam @NotNull String title,
-                                            @RequestParam(name = "size", required = false, defaultValue = "10") Integer size,
-                                            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page) {
+                                         @RequestParam(name = "size", required = false, defaultValue = "10") Integer size,
+                                         @RequestParam(name = "page", required = false, defaultValue = "0") Integer page) {
         Pageable pageable = PageRequest.of(page, size);
         return bookHandler.handlerGetBookByName(title, pageable);
     }
@@ -68,7 +68,7 @@ public class BookController {
     @PutMapping("/{id}")
     @Operation(summary = "Изменение книги")
     public BookView updateBookById(@PathVariable @NotNull Integer id,
-                                       @Valid @RequestBody @NotNull BookUpdateReq req) {
+                                   @Valid @RequestBody @NotNull BookUpdateReq req) {
         return bookHandler.handlerUpdateBookById(id, req);
     }
 

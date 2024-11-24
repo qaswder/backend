@@ -1,9 +1,6 @@
 package com.example.backendlib.core.book.web.contract;
 
-import com.example.backendlib.core.author.web.contract.AuthorView;
 import io.swagger.v3.oas.annotations.media.Schema;
-
-import java.util.Set;
 
 @Schema(description = "Книга")
 public record BookView(

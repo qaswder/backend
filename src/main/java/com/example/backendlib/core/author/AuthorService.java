@@ -49,14 +49,16 @@ public class AuthorService {
     public Author findOrCreateAuthor(@NonNull Author author) {
         return authorRepo
                 .findByFullName(author.getSurname(), author.getName(), author.getPatronymic())
-                .orElseGet(() -> {
-                    Author newAuthor = new Author();
-                    newAuthor.setSurname(author.getSurname());
-                    newAuthor.setName(author.getName());
-                    newAuthor.setPatronymic(author.getPatronymic());
-                    newAuthor.setCountry(author.getCountry());
-                    return saveAuthor(newAuthor);
-                });
+                .orElseGet(() -> createAuthor(author));
+    }
+
+    private Author createAuthor(Author author) {
+        Author newAuthor = new Author();
+        newAuthor.setSurname(author.getSurname());
+        newAuthor.setName(author.getName());
+        newAuthor.setPatronymic(author.getPatronymic());
+        newAuthor.setCountry(author.getCountry());
+        return saveAuthor(newAuthor);
     }
 
     @Transactional
@@ -77,7 +79,9 @@ public class AuthorService {
 
     @Transactional
     public Author getReferenceOrNew(@Nullable Integer id) {
-        return id == null ? new Author() : authorRepo.getReferenceById(id);
+        return id == null
+                ? new Author()
+                : authorRepo.getReferenceById(id);
     }
 
     @Transactional
@@ -88,7 +92,7 @@ public class AuthorService {
         Collection<Book> books = author.getBooks();
 
         for (Book book : books) {
-            if (book.getAuthors().size() < 2 &&
+            if (book.getAuthors().size() == 1 &&
                     book.getAuthors().stream().anyMatch(a -> a.getId().equals(id))) {
                 bookService.deleteBookById(book.getId());
             }
