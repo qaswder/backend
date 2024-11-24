@@ -8,8 +8,8 @@ import com.example.backendlib.core.book.converter.BookConverter;
 import com.example.backendlib.core.book.dto.Book;
 import com.example.backendlib.core.book.dto.GenreEnum;
 import com.example.backendlib.core.book.web.contract.*;
-import com.example.backendlib.error.ConflictResourceException;
 import com.example.backendlib.error.NotFoundException;
+import com.example.backendlib.util.MessageUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -25,19 +25,22 @@ public class BookHandler {
     private final BookConverter bookConverter;
     private final BookService bookService;
     private final AuthorService authorService;
+    private final MessageUtil messageUtil;
 
     public BookHandler(BookConverter bookConverter,
                        BookService bookService,
-                       AuthorService authorService) {
+                       AuthorService authorService,
+                       MessageUtil messageUtil) {
         this.bookConverter = bookConverter;
         this.bookService = bookService;
         this.authorService = authorService;
+        this.messageUtil = messageUtil;
     }
 
     public BookView handlerGetBookById(@NonNull Integer id) {
         return bookConverter.toView(
                 bookService.getBookById(id)
-                        .orElseThrow(() -> new NotFoundException("Книга с id=" + id + ", не найден"))
+                        .orElseThrow(() -> new NotFoundException(messageUtil.getMessage("book.id.not-found", id)))
         );
     }
 
@@ -52,6 +55,9 @@ public class BookHandler {
     public Page<BookView> handlerGetBookByName(@NonNull String title,
                                                @NonNull Pageable pageable) {
         Page<Book> books = bookService.getBookByTitle(title, pageable);
+        if(books.isEmpty()){
+            throw new NotFoundException(messageUtil.getMessage("book.title.not-found", title));
+        }
         List<BookView> bookViewList = books.stream()
                 .map(bookConverter::toView)
                 .toList();
@@ -71,7 +77,7 @@ public class BookHandler {
 
     public BookViewWithAuthors handlerAddAuthorsToBook(@NonNull Integer id, @NonNull BookCreateWithAuthorsReq req) {
         final Book book = bookService.getBookById(id)
-                .orElseThrow(() -> new NotFoundException("Книга с id=" + id + ", не найден"));
+                .orElseThrow(() -> new NotFoundException(messageUtil.getMessage("book.id.not-found", id)));
 
         Set<Author> authors = req.authors().stream()
                 .map(this::createAuthor)

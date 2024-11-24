@@ -4,6 +4,7 @@ import com.example.backendlib.core.book.dto.Book;
 import com.example.backendlib.core.book.dto.BookRepo;
 import com.example.backendlib.error.ConflictResourceException;
 import com.example.backendlib.error.NotFoundException;
+import com.example.backendlib.util.MessageUtil;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,9 +18,12 @@ import java.util.Optional;
 @Service
 public class BookService {
     private final BookRepo bookRepo;
+    private final MessageUtil messageUtil;
 
-    public BookService(BookRepo bookRepo) {
+    public BookService(BookRepo bookRepo,
+                       MessageUtil messageUtil) {
         this.bookRepo = bookRepo;
+        this.messageUtil = messageUtil;
     }
 
     @Transactional(readOnly = true)
@@ -54,7 +58,7 @@ public class BookService {
     @Transactional
     public void deleteBookById(@NonNull Integer id){
         Book book = getBookById(id)
-                .orElseThrow(()->new NotFoundException("Книга с id="+ id +", не найдена"));
+                .orElseThrow(()->new NotFoundException(messageUtil.getMessage("book.id.not-found", id)));
 
         book.removeAuthors(book.getAuthors());
         bookRepo.delete(book);

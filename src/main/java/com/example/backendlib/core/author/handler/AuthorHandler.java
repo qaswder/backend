@@ -7,6 +7,7 @@ import com.example.backendlib.core.author.web.contract.AuthorCreateReq;
 import com.example.backendlib.core.author.web.contract.AuthorUpdateReq;
 import com.example.backendlib.core.author.web.contract.AuthorView;
 import com.example.backendlib.error.NotFoundException;
+import com.example.backendlib.util.MessageUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -20,17 +21,20 @@ public class AuthorHandler {
 
     private final AuthorConverter authorConverter;
     private final AuthorService authorService;
+    private final MessageUtil messageUtil;
 
     public AuthorHandler(AuthorConverter authorConverter,
-                         AuthorService authorService) {
+                         AuthorService authorService,
+                         MessageUtil messageUtil) {
         this.authorConverter = authorConverter;
         this.authorService = authorService;
+        this.messageUtil = messageUtil;
     }
 
     public AuthorView handlerGetAuthorById(@NonNull Integer id){
         return authorConverter.toView(
                 authorService.getAuthorById(id)
-                        .orElseThrow(()->new NotFoundException("Автор с id="+ id +", не найден"))
+                        .orElseThrow(()->new NotFoundException(messageUtil.getMessage("author.id.not-found", id)))
         );
     }
 
@@ -45,6 +49,9 @@ public class AuthorHandler {
     public Page<AuthorView> handlerGetAuthorByName(@NonNull String name,
                                                    @NonNull Pageable pageable){
         Page<Author> authors = authorService.getAuthorByName(name, pageable);
+        if (authors.isEmpty()){
+            throw new NotFoundException(messageUtil.getMessage("author.name.not-found", name));
+        }
         List<AuthorView> authorViewList = authors.stream()
                 .map(authorConverter::toView)
                 .toList();
